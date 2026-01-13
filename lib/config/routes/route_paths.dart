@@ -17,4 +17,9 @@ class RoutePaths {
   
   // Waste Item Detail
   static const String wasteItemDetail = '/waste-item-detail';
+  
+  // Driver Routes
+  static const String driverLogin = '/driver-login';
+  static const String driverHome = '/driver-home';
+  static const String driverRequestDetail = '/driver-request-detail';
 }

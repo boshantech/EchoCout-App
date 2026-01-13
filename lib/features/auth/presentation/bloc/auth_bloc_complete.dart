@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../core/enums/app_role.dart';
 
 // Auth Events
 abstract class AuthEvent extends Equatable {
@@ -67,14 +68,16 @@ class OtpVerifying extends AuthState {
 class AuthSuccess extends AuthState {
   final String accessToken;
   final String phoneNumber;
+  final AppRole role;
 
   const AuthSuccess({
     required this.accessToken,
     required this.phoneNumber,
+    this.role = AppRole.user,
   });
 
   @override
-  List<Object?> get props => [accessToken, phoneNumber];
+  List<Object?> get props => [accessToken, phoneNumber, role];
 }
 
 class AuthFailure extends AuthState {
@@ -117,9 +120,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Call API to verify OTP
       // For now, mock the call
       await Future.delayed(const Duration(seconds: 2));
+      
+      // Determine role based on phone number
+      // Driver phone: 8123456790
+      final role = event.phoneNumber == '8123456790'
+          ? AppRole.driver
+          : AppRole.user;
+      
       emit(AuthSuccess(
         accessToken: 'mock_token_123',
         phoneNumber: event.phoneNumber,
+        role: role,
       ));
     } catch (e) {
       emit(AuthFailure(e.toString()));

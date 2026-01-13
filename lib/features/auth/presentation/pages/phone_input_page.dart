@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/utils/phone_validation.dart';
+import '../../../../config/theme/app_colors.dart';
+import '../../../../config/theme/eco_components.dart';
 
 class PhoneInputPage extends StatefulWidget {
   const PhoneInputPage({Key? key}) : super(key: key);
@@ -12,17 +15,33 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
   late TextEditingController _phoneController;
   late FocusNode _phoneFocusNode;
   
-  String _selectedCountryCode = '+91';
-  String _selectedCountryName = 'India';
-  String _selectedCountryFlag = '🇮🇳';
+  // 🇮🇳 INDIA-ONLY: Fixed country code (no country picker)
+  static const String _countryCode = '+91';
+  static const String _countryName = 'India';
+  static const String _countryFlag = '🇮🇳';
+  
   bool _syncContacts = false;
   bool _isLoading = false;
+  
+  // Validation state
+  late PhoneValidationResult _validationResult;
 
   @override
   void initState() {
     super.initState();
     _phoneController = TextEditingController();
     _phoneFocusNode = FocusNode();
+    
+    // Initialize validation result as empty
+    _validationResult = PhoneValidationResult.invalid(
+      input: '',
+      errorMessage: null,
+    );
+    
+    // Auto-focus on phone input for better UX
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _phoneFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -32,30 +51,34 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
     super.dispose();
   }
 
-  bool get _isPhoneValid {
-    return _phoneController.text.replaceAll(RegExp(r'\s'), '').length >= 9;
+  /// Handle phone input change with validation
+  void _onPhoneChanged(String value) {
+    setState(() {
+      _validationResult = PhoneValidator.validatePhone(
+        phoneInput: value,
+        countryCode: _countryCode,
+      );
+    });
   }
 
-  void _showCountryPicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => _CountryPickerBottomSheet(
-        onCountrySelected: (countryCode, countryName, flag) {
-          setState(() {
-            _selectedCountryCode = countryCode;
-            _selectedCountryName = countryName;
-            _selectedCountryFlag = flag;
-          });
-          Navigator.pop(context);
-        },
-      ),
-    );
+  /// Get whether phone input is valid (exactly 10 digits)
+  bool get _isPhoneValid => _validationResult.isValid;
+
+  /// Get validation error message (empty if no error or not focused)
+  String get _validationErrorText {
+    // Only show error if user has typed and input is invalid
+    if (_phoneController.text.isEmpty) return '';
+    if (_isPhoneValid) return '';
+    return _validationResult.errorMessage ?? '';
   }
 
   void _handleContinue() {
     if (!_isPhoneValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
+        SnackBar(
+          content: Text(_validationErrorText),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -68,10 +91,11 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
         setState(() => _isLoading = false);
         
         // Show success feedback
+        final fullNumber = '$_countryCode${_phoneController.text.replaceAll(RegExp(r'\D'), '')}';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('OTP sent to $_selectedCountryCode${_phoneController.text}'),
-            backgroundColor: Colors.green[400],
+            content: Text('OTP sent to $fullNumber'),
+            backgroundColor: AppColors.success,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -81,7 +105,7 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
           Navigator.pushNamed(
             context,
             '/auth/otp',
-            arguments: '$_selectedCountryCode${_phoneController.text}',
+            arguments: fullNumber,
           );
         });
       }
@@ -90,262 +114,420 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenHeight < 700;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
+          color: AppColors.forestGreen,
           onPressed: () => Navigator.of(context).pop(),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
+        toolbarHeight: 48,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Log in',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Please confirm your country code and\nenter your phone number.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                    height: 1.5,
-                  ),
-            ),
-            const SizedBox(height: 32),
-
-            // Country Code Picker
-            GestureDetector(
-              onTap: _showCountryPicker,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: isSmallScreen ? 10 : 14,
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    // 🌍 HERO HEADING
                     Text(
-                      _selectedCountryFlag,
-                      style: const TextStyle(fontSize: 24),
+                      'Welcome to EchoCout',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.forestGreen,
+                            fontSize: isSmallScreen ? 22 : 26,
+                          ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(height: isSmallScreen ? 4 : 6),
                     Text(
-                      _selectedCountryName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                      'Protect the planet together 🌱',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                            height: 1.3,
+                            fontSize: 13,
+                          ),
+                    ),
+                    SizedBox(height: isSmallScreen ? 14 : 18),
+
+                    // 🇮🇳 COUNTRY INFO (India only, non-editable)
+                    EcoCard(
+                      backgroundColor: AppColors.leafGreen.withOpacity(0.08),
+                      child: Row(
+                        children: [
+                          Text(
+                            _countryFlag,
+                            style: TextStyle(
+                              fontSize: isSmallScreen ? 24 : 28,
+                            ),
+                          ),
+                          SizedBox(width: isSmallScreen ? 10 : 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Selected Country',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.textTertiary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 10,
+                                      ),
+                                ),
+                                SizedBox(height: isSmallScreen ? 1 : 2),
+                                Text(
+                                  _countryName,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: AppColors.forestGreen,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            _countryCode,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.forestGreen,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
-                    const Spacer(),
-                    Icon(Icons.chevron_right, color: Colors.grey[400]),
+                    SizedBox(height: isSmallScreen ? 12 : 16),
+
+                    // 📱 PHONE NUMBER INPUT SECTION
+                    Text(
+                      'Phone Number',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                    ),
+                    SizedBox(height: isSmallScreen ? 4 : 6),
+
+                    Row(
+                      children: [
+                        // Fixed +91 prefix (non-editable)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isSmallScreen ? 12 : 14,
+                            vertical: isSmallScreen ? 10 : 12,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.divider,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.inputBackground,
+                          ),
+                          child: Text(
+                            _countryCode,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.forestGreen,
+                                  fontSize: 14,
+                                ),
+                          ),
+                        ),
+                        SizedBox(width: isSmallScreen ? 8 : 10),
+
+                        // 10-digit phone number input
+                        Expanded(
+                          child: TextField(
+                            controller: _phoneController,
+                            focusNode: _phoneFocusNode,
+                            keyboardType: TextInputType.phone,
+                            textInputAction: TextInputAction.done,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            onChanged: _onPhoneChanged,
+                            decoration: InputDecoration(
+                              hintText: '1234567890',
+                              hintStyle: TextStyle(
+                                color: AppColors.textTertiary,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 13,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppColors.inputBorder,
+                                  width: 1.5,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: _isPhoneValid && _phoneController.text.isNotEmpty
+                                      ? AppColors.success
+                                      : AppColors.inputBorder,
+                                  width: _isPhoneValid && _phoneController.text.isNotEmpty ? 2 : 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: _validationErrorText.isNotEmpty
+                                      ? AppColors.warning
+                                      : AppColors.forestGreen,
+                                  width: 2,
+                                ),
+                              ),
+                              suffixIcon: _phoneController.text.isNotEmpty
+                                  ? _isPhoneValid
+                                      ? Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Icon(
+                                            Icons.check_circle,
+                                            color: AppColors.success,
+                                            size: 20,
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Icon(
+                                            Icons.error_outline,
+                                            color: AppColors.warning,
+                                            size: 20,
+                                          ),
+                                        )
+                                  : null,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: isSmallScreen ? 12 : 14,
+                                vertical: isSmallScreen ? 10 : 12,
+                              ),
+                              filled: true,
+                              fillColor: AppColors.inputBackground,
+                              isDense: true,
+                            ),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: isSmallScreen ? 6 : 8),
+
+                    // VALIDATION FEEDBACK - Enhanced Professional Style
+                    if (_phoneController.text.isNotEmpty && !_isPhoneValid)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.warning.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.warning.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: AppColors.warning,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _validationErrorText,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      fontSize: 11,
+                                      color: AppColors.warning.withOpacity(0.9),
+                                      height: 1.3,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (_isPhoneValid && _phoneController.text.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.success.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: AppColors.success,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '✓ Valid phone number',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontSize: 11,
+                                    color: AppColors.success,
+                                    height: 1.3,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    SizedBox(height: isSmallScreen ? 10 : 12),
+
+                    // 📞 SYNC CONTACTS - Professional Toggle
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isSmallScreen ? 12 : 14,
+                        vertical: isSmallScreen ? 10 : 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.leafGreen.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.divider,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Sync Contacts',
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Save verified contacts automatically',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.textTertiary,
+                                        fontSize: 10,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              value: _syncContacts,
+                              onChanged: (value) {
+                                setState(() => _syncContacts = value);
+                              },
+                              activeColor: AppColors.forestGreen,
+                              inactiveThumbColor: AppColors.textTertiary,
+                              inactiveTrackColor: AppColors.divider,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 10 : 12),
+
+                    // Helper text
+                    Text(
+                      'We\'ll send a one-time OTP to verify your number.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textTertiary,
+                            height: 1.3,
+                            fontSize: 11,
+                          ),
+                    ),
+
+                    SizedBox(height: isSmallScreen ? 8 : 10),
+
+                    // Driver login link
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacementNamed('/driver-login');
+                        },
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'Are you a driver? ',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 11,
+                                ),
+                            children: [
+                              TextSpan(
+                                text: 'Login',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.forestGreen,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 11,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Phone Number Input
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _selectedCountryCode,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
+            // 🌍 CONTINUE BUTTON (Fixed at bottom - Professional)
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: AppColors.divider,
+                    width: 0.5,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _phoneController,
-                    focusNode: _phoneFocusNode,
-                    keyboardType: TextInputType.phone,
-                    onChanged: (_) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: '000 000 0000',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFF7FD8E8),
-                          width: 2,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Sync Contacts Toggle
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Sync Contacts',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                Switch(
-                  value: _syncContacts,
-                  onChanged: (value) {
-                    setState(() => _syncContacts = value);
-                  },
-                  activeColor: Colors.green[400],
-                  inactiveThumbColor: Colors.grey[300],
-                  inactiveTrackColor: Colors.grey[200],
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Continue Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
+              ),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                isSmallScreen ? 8 : 10,
+                20,
+                isSmallScreen ? 10 : 12,
+              ),
+              child: EcoActionButton(
+                label: 'Continue',
+                icon: Icons.arrow_forward,
                 onPressed: _isPhoneValid && !_isLoading ? _handleContinue : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[400],
-                  disabledBackgroundColor: Colors.grey[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Text(
-                        'Continue',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                isLoading: _isLoading,
+                backgroundColor: AppColors.forestGreen,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CountryPickerBottomSheet extends StatelessWidget {
-  final Function(String, String, String) onCountrySelected;
-
-  const _CountryPickerBottomSheet({
-    Key? key,
-    required this.onCountrySelected,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final countries = [
-      ('🇫🇷', 'France', '+33'),
-      ('🇬🇧', 'United Kingdom', '+44'),
-      ('🇩🇪', 'Germany', '+49'),
-      ('🇪🇸', 'Spain', '+34'),
-      ('🇮🇹', 'Italy', '+39'),
-      ('🇳🇱', 'Netherlands', '+31'),
-      ('🇧🇪', 'Belgium', '+32'),
-      ('🇦🇹', 'Austria', '+43'),
-      ('🇵🇱', 'Poland', '+48'),
-      ('🇨🇭', 'Switzerland', '+41'),
-      ('🇸🇪', 'Sweden', '+46'),
-      ('🇩🇰', 'Denmark', '+45'),
-      ('🇳🇴', 'Norway', '+47'),
-      ('🇵🇹', 'Portugal', '+351'),
-    ];
-
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Select Country',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: countries.length,
-              itemBuilder: (context, index) {
-                final (flag, name, code) = countries[index];
-                return ListTile(
-                  leading: Text(flag, style: const TextStyle(fontSize: 24)),
-                  title: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                  ),
-                  trailing: Text(
-                    code,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  onTap: () => onCountrySelected(code, name, flag),
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }

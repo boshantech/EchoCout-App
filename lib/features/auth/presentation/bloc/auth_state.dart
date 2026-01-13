@@ -1,3 +1,5 @@
+import '../../../../core/enums/app_role.dart';
+
 abstract class AuthState {
   const AuthState();
 }
@@ -39,6 +41,7 @@ class Authenticated extends AuthState {
   final String? name;
   final String? email;
   final bool isOnboardingComplete;
+  final AppRole role;
 
   const Authenticated({
     required this.userId,
@@ -46,6 +49,7 @@ class Authenticated extends AuthState {
     this.name,
     this.email,
     this.isOnboardingComplete = false,
+    this.role = AppRole.user,
   });
 }
 

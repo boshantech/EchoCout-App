@@ -67,21 +67,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
               bottom: 30,
               left: 20,
               right: 20,
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/auth/phone');
-                  },
-                  child: const Text(
-                    'Get Started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/auth/phone');
+                      },
+                      child: const Text(
+                        'Get Started as User',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/driver-login');
+                      },
+                      child: const Text(
+                        'Driver Login',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             )
           else

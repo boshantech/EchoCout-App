@@ -4,11 +4,20 @@ import 'package:get_it/get_it.dart';
 import '../../core/network/dio_client.dart';
 import '../../core/network/token_manager.dart';
 
+// Driver Auth Feature
+import '../../features/driver_auth/data/datasources/driver_auth_local_datasource.dart';
+import '../../features/driver_auth/data/repositories/driver_auth_repository_impl.dart';
+import '../../features/driver_auth/domain/repositories/driver_auth_repository.dart';
+import '../../features/driver_auth/presentation/bloc/driver_auth_bloc.dart';
+
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   // Core Services
   _setupCore();
+  
+  // Driver Auth Feature
+  _setupDriverAuth();
   
   // Auth Feature
   _setupAuth();
@@ -33,6 +42,27 @@ void _setupCore() {
   // Network
   getIt.registerSingleton<DioClient>(DioClient());
   getIt.registerSingleton<TokenManager>(TokenManager());
+}
+
+void _setupDriverAuth() {
+  // Data source
+  getIt.registerSingleton<DriverAuthLocalDataSource>(
+    DriverAuthLocalDataSource(),
+  );
+  
+  // Repository
+  getIt.registerSingleton<DriverAuthRepository>(
+    DriverAuthRepositoryImpl(
+      localDataSource: getIt<DriverAuthLocalDataSource>(),
+    ),
+  );
+  
+  // Bloc
+  getIt.registerSingleton<DriverAuthBloc>(
+    DriverAuthBloc(
+      repository: getIt<DriverAuthRepository>(),
+    ),
+  );
 }
 
 void _setupAuth() {
