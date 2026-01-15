@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/splash/presentation/pages/splash_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/phone_input_page.dart';
-import '../../features/auth/presentation/pages/otp_verification_page.dart';
+import '../../features/auth/presentation/pages/driver_otp_verification_page.dart';
 import '../../features/main/presentation/pages/main_page_mock.dart';
 import '../../features/home/presentation/pages/waste_item_detail_screen.dart';
 import '../../features/driver_auth/presentation/pages/driver_phone_login_screen.dart';

@@ -7,6 +7,8 @@ class DriverProfile {
   final double pointsEarned;
   final double natureSavedPercentage;
   final String area; // Service area
+  final double totalEarned; // Total amount earned
+  final double amountWithdrawn; // Total amount withdrawn
 
   DriverProfile({
     required this.id,
@@ -16,6 +18,8 @@ class DriverProfile {
     required this.pointsEarned,
     required this.natureSavedPercentage,
     required this.area,
+    required this.totalEarned,
+    required this.amountWithdrawn,
   });
 
   DriverProfile copyWith({
@@ -26,6 +30,8 @@ class DriverProfile {
     double? pointsEarned,
     double? natureSavedPercentage,
     String? area,
+    double? totalEarned,
+    double? amountWithdrawn,
   }) {
     return DriverProfile(
       id: id ?? this.id,
@@ -35,6 +41,8 @@ class DriverProfile {
       pointsEarned: pointsEarned ?? this.pointsEarned,
       natureSavedPercentage: natureSavedPercentage ?? this.natureSavedPercentage,
       area: area ?? this.area,
+      totalEarned: totalEarned ?? this.totalEarned,
+      amountWithdrawn: amountWithdrawn ?? this.amountWithdrawn,
     );
   }
 }
@@ -55,6 +63,7 @@ class PickupRequest {
   final double latitude;
   final double longitude;
   final PickupRequestStatus status;
+  final String? transferredByDriverName; // Name of driver who transferred this request
 
   PickupRequest({
     required this.id,
@@ -71,6 +80,7 @@ class PickupRequest {
     required this.latitude,
     required this.longitude,
     required this.status,
+    this.transferredByDriverName,
   });
 
   PickupRequest copyWith({
@@ -88,6 +98,7 @@ class PickupRequest {
     double? latitude,
     double? longitude,
     PickupRequestStatus? status,
+    String? transferredByDriverName,
   }) {
     return PickupRequest(
       id: id ?? this.id,
@@ -104,6 +115,7 @@ class PickupRequest {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       status: status ?? this.status,
+      transferredByDriverName: transferredByDriverName ?? this.transferredByDriverName,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../core/models/driver_models.dart';
 
@@ -7,7 +8,7 @@ import '../../../../core/models/driver_models.dart';
 /// Shows ONLY:
 /// - User DP, name, phone, call button
 /// - Waste type, quantity, distance
-/// - Pickup OTP
+/// - Map button to view location
 /// 
 /// NO action buttons (those are on detail screen)
 /// Tapping card navigates to detail screen
@@ -27,6 +28,27 @@ class RequestCard extends StatelessWidget {
       return '${(km * 1000).toStringAsFixed(0)}m';
     }
     return '${km.toStringAsFixed(1)}km';
+  }
+
+  /// Open Google Maps for the pickup location
+  Future<void> _openMap(BuildContext context) async {
+    final latitude = request.latitude;
+    final longitude = request.longitude;
+    
+    final googleMapsUrl = 'https://maps.google.com/?q=$latitude,$longitude';
+    final gmapsUrl = Uri.parse('google.navigation:q=$latitude,$longitude&mode=d');
+
+    try {
+      if (await canLaunchUrl(gmapsUrl)) {
+        await launchUrl(gmapsUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+          await launchUrl(Uri.parse(googleMapsUrl), mode: LaunchMode.externalApplication);
+        }
+      }
+    } catch (e) {
+      // Silently fail
+    }
   }
 
   @override
@@ -205,32 +227,38 @@ class RequestCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text(
-                          'Pickup OTP',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textTertiary,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.forestGreen,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            request.pickupOtp,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 2,
+                        GestureDetector(
+                          onTap: () => _openMap(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.forestGreen.withOpacity(0.1),
+                              border: Border.all(
+                                color: AppColors.forestGreen.withOpacity(0.3),
+                              ),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: 16,
+                                  color: AppColors.forestGreen,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'View Map',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.forestGreen,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

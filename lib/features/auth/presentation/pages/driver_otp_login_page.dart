@@ -3,23 +3,22 @@ import 'package:flutter/services.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/routes/route_paths.dart';
 
-class OtpVerificationPage extends StatefulWidget {
+class DriverOtpVerificationPage extends StatefulWidget {
   final String phoneNumber;
   final int otpLength;
-  final bool isDriver;
 
-  const OtpVerificationPage({
+  const DriverOtpVerificationPage({
     Key? key,
     required this.phoneNumber,
     this.otpLength = 4,
-    this.isDriver = false,
   }) : super(key: key);
 
   @override
-  State<OtpVerificationPage> createState() => _OtpVerificationPageState();
+  State<DriverOtpVerificationPage> createState() =>
+      _DriverOtpVerificationPageState();
 }
 
-class _OtpVerificationPageState extends State<OtpVerificationPage> {
+class _DriverOtpVerificationPageState extends State<DriverOtpVerificationPage> {
   late List<TextEditingController> _otpControllers;
   late List<FocusNode> _otpFocusNodes;
   
@@ -110,26 +109,19 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           // Success feedback
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('✓ Phone verified successfully!'),
+              content: const Text('✓ Driver verified successfully!'),
               backgroundColor: AppColors.success,
               duration: const Duration(milliseconds: 1200),
             ),
           );
           
-          // Navigate based on user type
+          // Navigate to driver home
           Future.delayed(const Duration(milliseconds: 600), () {
             if (mounted) {
-              if (widget.isDriver) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  RoutePaths.driverHome,
-                  (route) => false,
-                );
-              } else {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  RoutePaths.main,
-                  (route) => false,
-                );
-              }
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                RoutePaths.driverHome,
+                (route) => false,
+              );
             }
           });
         } else {
@@ -208,7 +200,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   children: [
                     // 🔐 HEADING
                     Text(
-                      'Verify OTP',
+                      'Driver Verification',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.forestGreen,
@@ -519,5 +511,3 @@ class _OtpInputFieldState extends State<_OtpInputField> {
     );
   }
 }
-
-

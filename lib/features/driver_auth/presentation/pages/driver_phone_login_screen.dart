@@ -49,7 +49,8 @@ class _DriverPhoneLoginScreenState extends State<DriverPhoneLoginScreen> {
     return BlocConsumer<DriverAuthBloc, DriverAuthState>(
       listener: (context, state) {
         if (state is OtpWaitingState) {
-          Navigator.of(context).pushReplacement(
+          // Navigate while keeping Bloc alive
+          Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => const OtpVerificationScreen(),
             ),

@@ -32,10 +32,6 @@ class DriverBottomNavigation extends StatelessWidget {
           label: 'Echo',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.qr_code_scanner),
-          label: 'Scanner',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.trending_up_outlined),
           activeIcon: Icon(Icons.trending_up),
           label: 'Rank',

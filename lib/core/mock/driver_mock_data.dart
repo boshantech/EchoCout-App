@@ -13,6 +13,8 @@ class DriverMockData {
     pointsEarned: 2450.0,
     natureSavedPercentage: 42.5,
     area: 'Bangalore - Whitefield',
+    totalEarned: 15750.0,
+    amountWithdrawn: 12500.0,
   );
 
   // Mock pickup requests (available for driver)
@@ -27,7 +29,7 @@ class DriverMockData {
       quantity: 12.5,
       distanceKm: 2.3,
       estimatedAmount: 485.0,
-      pickupOtp: '4821',
+      pickupOtp: '1234',
       pickupLocation: 'Whitefield Main Rd, Bangalore',
       latitude: 12.9698,
       longitude: 77.7499,

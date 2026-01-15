@@ -6,42 +6,18 @@ class DriverOtpInitial extends DriverOtpState {
   const DriverOtpInitial();
 }
 
-class DriverOtpReady extends DriverOtpState {
-  final String phoneNumber;
-  final int timerSeconds;
-
-  const DriverOtpReady({
-    required this.phoneNumber,
-    this.timerSeconds = 50,
-  });
+class DriverOtpLoading extends DriverOtpState {
+  const DriverOtpLoading();
 }
 
-class DriverOtpVerifying extends DriverOtpState {
-  const DriverOtpVerifying();
-}
-
-class DriverOtpVerified extends DriverOtpState {
+class DriverOtpSuccess extends DriverOtpState {
   final String phoneNumber;
 
-  const DriverOtpVerified({required this.phoneNumber});
+  const DriverOtpSuccess({required this.phoneNumber});
 }
 
-class DriverOtpFailed extends DriverOtpState {
+class DriverOtpError extends DriverOtpState {
   final String message;
 
-  const DriverOtpFailed({required this.message});
-}
-
-class DriverOtpTimerUpdate extends DriverOtpState {
-  final int remainingSeconds;
-
-  const DriverOtpTimerUpdate({required this.remainingSeconds});
-}
-
-class DriverOtpExpired extends DriverOtpState {
-  final String message;
-
-  const DriverOtpExpired({
-    this.message = 'OTP expired. Please request a new one.',
-  });
+  const DriverOtpError({required this.message});
 }

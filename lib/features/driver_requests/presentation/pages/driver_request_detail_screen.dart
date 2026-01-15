@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
+import 'dart:typed_data';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../core/models/driver_models.dart';
 import '../../../../core/managers/driver_state_manager.dart';
@@ -10,7 +13,7 @@ import '../../../../core/managers/driver_state_manager.dart';
 /// Flow:
 /// 1. Request actions (Accept/Decline/Hide/Transfer)
 /// 2. User details confirmation
-/// 3. OTP verification
+/// 3. View location on map
 /// 4. Photo capture
 /// 5. Mark waste collected
 class DriverRequestDetailScreen extends StatefulWidget {
@@ -32,11 +35,12 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
   late TextEditingController _otpController;
 
   // UI States
+  bool _requestAccepted = false;
   bool _otpVerified = false;
   bool _wastePhotoCaptured = false;
   bool _isLoadingOtp = false;
   String _otpError = '';
-  File? _wastePhoto;
+  Uint8List? _wastePhoto;
 
   @override
   void initState() {
@@ -103,6 +107,61 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
     }
   }
 
+  /// Cancel request acceptance and reset to initial state
+  void _cancelRequestAcceptance() {
+    setState(() {
+      _requestAccepted = false;
+      _otpVerified = false;
+      _otpError = '';
+      _otpController.clear();
+    });
+  }
+
+  /// Open Google Maps for the pickup location
+  Future<void> _openMapLocation() async {
+    final latitude = _currentRequest.latitude;
+    final longitude = _currentRequest.longitude;
+
+    // Create Google Maps URL for browser fallback
+    final googleMapsUrl = 'https://maps.google.com/?q=$latitude,$longitude';
+
+    // URL for Google Maps app
+    final gmapsUrl = Uri.parse('google.navigation:q=$latitude,$longitude&mode=d');
+
+    try {
+      // Try Google Maps app first
+      if (await canLaunchUrl(gmapsUrl)) {
+        await launchUrl(gmapsUrl, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback to browser
+        if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+          await launchUrl(
+            Uri.parse(googleMapsUrl),
+            mode: LaunchMode.externalApplication,
+          );
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('❌ Could not open maps'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Error opening location'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   /// Capture waste photo from camera
   Future<void> _captureWastePhoto() async {
     try {
@@ -113,8 +172,9 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
       );
 
       if (photo != null) {
+        final bytes = await photo.readAsBytes();
         setState(() {
-          _wastePhoto = File(photo.path);
+          _wastePhoto = bytes;
           _wastePhotoCaptured = true;
         });
 
@@ -137,16 +197,6 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
 
   /// Mark waste as collected and remove from available requests
   Future<void> _markWasteCollected() async {
-    if (!_otpVerified) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please verify OTP first'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
     if (!_wastePhotoCaptured) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -234,9 +284,10 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
   void _handleRequestAction(String action) {
     switch (action) {
       case 'accept':
+        setState(() => _requestAccepted = true);
         widget.driverStateManager.acceptRequest(_currentRequest);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Request accepted!')),
+          const SnackBar(content: Text('✅ Request accepted! Please verify OTP')),
         );
         break;
 
@@ -358,104 +409,105 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
             // ═══════════════════════════════════════════════════════════
             Container(
               color: AppColors.forestGreen.withOpacity(0.05),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'User Details',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.forestGreen,
+                  // Compact user info row
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 32,
+                        backgroundImage: NetworkImage(
+                          _currentRequest.userProfileImage,
                         ),
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(
-                            _currentRequest.userProfileImage,
-                          ),
-                          backgroundColor: AppColors.leafGreen.withOpacity(0.1),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _currentRequest.userName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.leafGreen.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.phone,
-                                size: 18,
-                                color: AppColors.forestGreen,
+                        backgroundColor: AppColors.leafGreen.withOpacity(0.1),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _currentRequest.userName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _currentRequest.userPhone,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone,
+                                  size: 14,
                                   color: AppColors.forestGreen,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.leafGreen.withOpacity(0.3),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _currentRequest.userPhone,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.forestGreen,
+                                  ),
+                                ),
+                              ],
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Compact location box
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.leafGreen.withOpacity(0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: AppColors.forestGreen,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Pickup Location',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textTertiary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _currentRequest.pickupLocation,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Pickup Location',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textTertiary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _currentRequest.pickupLocation,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Lat: ${_currentRequest.latitude.toStringAsFixed(4)}, Lng: ${_currentRequest.longitude.toStringAsFixed(4)}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Lat: ${_currentRequest.latitude.toStringAsFixed(4)}, Lng: ${_currentRequest.longitude.toStringAsFixed(4)}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -465,7 +517,7 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // ═══════════════════════════════════════════════════════════
             // WASTE DETAILS SECTION
@@ -525,130 +577,223 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
             const SizedBox(height: 24),
 
             // ═══════════════════════════════════════════════════════════
-            // OTP VERIFICATION SECTION
+            // MAP BUTTON (Always visible)
             // ═══════════════════════════════════════════════════════════
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'OTP Verification',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.forestGreen,
-                        ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (_otpVerified)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
-                        border: Border.all(color: Colors.green.withOpacity(0.3)),
-                        borderRadius: BorderRadius.circular(12),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _openMapLocation,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.forestGreen.withOpacity(0.3),
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.green, size: 28),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'OTP Verified',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                Text(
-                                  'Proceed with waste collection',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    Column(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextField(
-                          controller: _otpController,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            letterSpacing: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLength: 4,
-                          decoration: InputDecoration(
-                            hintText: 'Enter OTP',
-                            hintStyle: TextStyle(
-                              color: AppColors.textTertiary,
-                            ),
-                            contentPadding: const EdgeInsets.all(16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: _otpError.isNotEmpty
-                                    ? Colors.red
-                                    : AppColors.divider,
-                              ),
-                            ),
-                            errorText: _otpError.isNotEmpty ? _otpError : null,
-                            counterText: '',
-                          ),
-                          onChanged: (value) {
-                            if (_otpError.isNotEmpty) {
-                              setState(() => _otpError = '');
-                            }
-                          },
+                        Icon(
+                          Icons.location_on,
+                          color: AppColors.forestGreen,
+                          size: 20,
                         ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: _isLoadingOtp ? null : _verifyOtp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.forestGreen,
-                              disabledBackgroundColor:
-                                  AppColors.forestGreen.withOpacity(0.5),
-                            ),
-                            child: _isLoadingOtp
-                                ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Verify OTP',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Open Map',
+                          style: TextStyle(
+                            color: AppColors.forestGreen,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                         ),
                       ],
                     ),
-                ],
+                  ),
+                ),
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
+            // ═══════════════════════════════════════════════════════════
+            // OTP VERIFICATION (After Accept)
+            // ═══════════════════════════════════════════════════════════
+            if (_requestAccepted && !_otpVerified)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Enter OTP',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.forestGreen,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _otpController,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        letterSpacing: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLength: 4,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: 'Enter OTP',
+                        hintStyle: TextStyle(
+                          color: AppColors.textTertiary,
+                        ),
+                        contentPadding: const EdgeInsets.all(16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: _otpError.isNotEmpty
+                                ? Colors.red
+                                : AppColors.divider,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: AppColors.forestGreen,
+                            width: 2,
+                          ),
+                        ),
+                        errorText: _otpError.isNotEmpty ? _otpError : null,
+                        counterText: '',
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      onChanged: (value) {
+                        if (_otpError.isNotEmpty) {
+                          setState(() => _otpError = '');
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: ElevatedButton(
+                              onPressed: _isLoadingOtp ? null : _verifyOtp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.forestGreen,
+                                disabledBackgroundColor:
+                                    AppColors.forestGreen.withOpacity(0.5),
+                              ),
+                              child: _isLoadingOtp
+                                  ? const SizedBox(
+                                      height: 22,
+                                      width: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Verify OTP',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: OutlinedButton(
+                              onPressed: _cancelRequestAcceptance,
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: AppColors.forestGreen,
+                                  width: 1.5,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Cancel Request',
+                                style: TextStyle(
+                                  color: AppColors.forestGreen,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            else if (_requestAccepted && _otpVerified)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    border: Border.all(
+                      color: Colors.green.withOpacity(0.3),
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'OTP Verified ✅',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Text(
+                              'Proceed with waste collection',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 24),
             // ═══════════════════════════════════════════════════════════
             // WASTE COLLECTION SECTION (Only after OTP verified)
             // ═══════════════════════════════════════════════════════════
@@ -677,15 +822,15 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
                               : AppColors.divider,
                           width: 2,
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        color: _wastePhotoCaptured
-                            ? AppColors.leafGreen.withOpacity(0.05)
+                      borderRadius: BorderRadius.circular(12),
+                      color: _wastePhotoCaptured
+                          ? AppColors.leafGreen.withOpacity(0.05)
                             : Colors.grey.withOpacity(0.05),
                       ),
                       child: _wastePhotoCaptured && _wastePhoto != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(10),
-                              child: Image.file(
+                              child: Image.memory(
                                 _wastePhoto!,
                                 fit: BoxFit.cover,
                               ),
@@ -762,7 +907,7 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
                         ),
                         icon: const Icon(Icons.check_circle_outline),
                         label: const Text(
-                          'Mark Waste Collected',
+                          'Request Complete',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -775,8 +920,8 @@ class _DriverRequestDetailScreenState extends State<DriverRequestDetailScreen> {
                 ),
               ),
 
-            // Accept button (if not already accepted)
-            if (!_otpVerified)
+            // Accept button (only if not accepted)
+            if (!_requestAccepted)
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: SizedBox(

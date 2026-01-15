@@ -59,6 +59,12 @@ dependencies:
   # HTTP & Connectivity
   connectivity_plus: ^5.0.1
   
+  # URL Launcher
+  url_launcher: ^6.2.0
+  
+  # Permissions
+  permission_handler: ^11.0.0
+  
   # Logging
   logger: ^2.0.1
   
