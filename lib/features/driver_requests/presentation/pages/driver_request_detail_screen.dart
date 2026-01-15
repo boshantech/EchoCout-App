@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
 import 'dart:typed_data';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../core/models/driver_models.dart';
@@ -21,10 +20,10 @@ class DriverRequestDetailScreen extends StatefulWidget {
   final DriverStateManager driverStateManager;
 
   const DriverRequestDetailScreen({
-    Key? key,
+    super.key,
     required this.request,
     required this.driverStateManager,
-  }) : super(key: key);
+  });
 
   @override
   State<DriverRequestDetailScreen> createState() => _DriverRequestDetailScreenState();

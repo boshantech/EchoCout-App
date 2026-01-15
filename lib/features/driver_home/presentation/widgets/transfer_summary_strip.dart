@@ -7,10 +7,10 @@ class TransferSummaryStrip extends StatelessWidget {
   final int rejectedCount;
 
   const TransferSummaryStrip({
-    Key? key,
+    super.key,
     required this.acceptedCount,
     required this.rejectedCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

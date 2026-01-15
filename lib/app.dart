@@ -14,7 +14,7 @@ import 'features/profile/presentation/bloc/profile_bloc_complete.dart';
 import 'features/driver_auth/presentation/bloc/driver_auth_bloc.dart';
 
 class EchoApp extends StatefulWidget {
-  const EchoApp({Key? key}) : super(key: key);
+  const EchoApp({super.key});
 
   @override
   State<EchoApp> createState() => _EchoAppState();

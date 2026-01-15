@@ -11,9 +11,9 @@ class DriverOtpScreen extends StatefulWidget {
   final String phoneNumber;
 
   const DriverOtpScreen({
-    Key? key,
+    super.key,
     required this.phoneNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<DriverOtpScreen> createState() => _DriverOtpScreenState();
@@ -376,7 +376,6 @@ class _OtpBox extends StatefulWidget {
   final FocusNode? previousFocus;
 
   const _OtpBox({
-    Key? key,
     required this.controller,
     required this.focusNode,
     required this.onChanged,
@@ -384,7 +383,7 @@ class _OtpBox extends StatefulWidget {
     this.nextFocus,
     this.previousController,
     this.previousFocus,
-  }) : super(key: key);
+  });
 
   @override
   State<_OtpBox> createState() => _OtpBoxState();

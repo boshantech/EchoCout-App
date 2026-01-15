@@ -7,7 +7,7 @@ import '../bloc/driver_auth_state.dart';
 import 'otp_verification_screen.dart';
 
 class DriverPhoneLoginScreen extends StatefulWidget {
-  const DriverPhoneLoginScreen({Key? key}) : super(key: key);
+  const DriverPhoneLoginScreen({super.key});
 
   @override
   State<DriverPhoneLoginScreen> createState() => _DriverPhoneLoginScreenState();

@@ -4,26 +4,26 @@ abstract class AppException implements Exception {
 }
 
 class NetworkException extends AppException {
-  NetworkException(String message) : super(message);
+  NetworkException(super.message);
 }
 
 class ServerException extends AppException {
   final int? statusCode;
-  ServerException(String message, {this.statusCode}) : super(message);
+  ServerException(super.message, {this.statusCode});
 }
 
 class AuthenticationException extends AppException {
-  AuthenticationException(String message) : super(message);
+  AuthenticationException(super.message);
 }
 
 class UnauthorizedException extends AppException {
-  UnauthorizedException(String message) : super(message);
+  UnauthorizedException(super.message);
 }
 
 class ValidationException extends AppException {
-  ValidationException(String message) : super(message);
+  ValidationException(super.message);
 }
 
 class CacheException extends AppException {
-  CacheException(String message) : super(message);
+  CacheException(super.message);
 }

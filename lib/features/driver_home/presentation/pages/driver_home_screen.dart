@@ -16,9 +16,9 @@ class DriverHomeScreen extends StatefulWidget {
   final DriverStateManager driverStateManager;
 
   const DriverHomeScreen({
-    Key? key,
+    super.key,
     required this.driverStateManager,
-  }) : super(key: key);
+  });
 
   @override
   State<DriverHomeScreen> createState() => _DriverHomeScreenState();
@@ -234,7 +234,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               ),
                             ),
                             Text(
-                              '${driver?.pointsEarned.toStringAsFixed(0) ?? '0'}',
+                              driver?.pointsEarned.toStringAsFixed(0) ?? '0',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
@@ -575,10 +575,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     );
   }
 
-  Widget _buildScannerTab() {
-    return const Center(child: Text('Scanner Tab'));
-  }
-
   Widget _buildRankTab() {
     return SingleChildScrollView(
       child: Column(
@@ -768,7 +764,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                prizes[index]['prize']! as String,
+                                prizes[index]['prize']!,
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 12,
@@ -1323,7 +1319,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 documentName: documentName,
                 isVerified: isVerified,
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -1535,8 +1531,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   /// Launch Verification URL
   void _launchVerificationUrl(String documentName) {
-    const verificationUrl = 'https://verify.echocout.com';
-    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Opening verification for $documentName...'),
@@ -1550,7 +1544,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   String _maskPhoneNumber(String phone) {
     if (phone.isEmpty || phone.length < 4) return phone;
     final lastFour = phone.substring(phone.length - 4);
-    return '****${lastFour}';
+    return '****$lastFour';
   }
 }
 
@@ -1559,9 +1553,8 @@ class _EarningsCard extends StatefulWidget {
   final DriverProfile? driver;
 
   const _EarningsCard({
-    Key? key,
     required this.driver,
-  }) : super(key: key);
+  });
 
   @override
   State<_EarningsCard> createState() => __EarningsCardState();
@@ -1730,7 +1723,7 @@ class __EarningsCardState extends State<_EarningsCard>
                         child: _buildStatItem(
                           icon: Icons.star_rounded,
                           label: 'Points',
-                          value: '${driver?.pointsEarned.toStringAsFixed(0) ?? '0'}',
+                          value: driver?.pointsEarned.toStringAsFixed(0) ?? '0',
                           color: AppColors.forestGreen,
                         ),
                       ),
@@ -1817,9 +1810,8 @@ class _CollapsiblePendingPickupsCard extends StatefulWidget {
   final List<PickupRequest> requests;
 
   const _CollapsiblePendingPickupsCard({
-    Key? key,
     required this.requests,
-  }) : super(key: key);
+  });
 
   @override
   State<_CollapsiblePendingPickupsCard> createState() =>
@@ -2047,10 +2039,9 @@ class _HistoryCard extends StatefulWidget {
   final List<PickupRequest> cancelledRequests;
 
   const _HistoryCard({
-    Key? key,
     required this.completedRequests,
     required this.cancelledRequests,
-  }) : super(key: key);
+  });
 
   @override
   State<_HistoryCard> createState() => __HistoryCardState();

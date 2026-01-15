@@ -9,11 +9,11 @@ class HiddenRequestCard extends StatelessWidget {
   final VoidCallback onTransfer;
 
   const HiddenRequestCard({
-    Key? key,
+    super.key,
     required this.request,
     required this.onUnhide,
     required this.onTransfer,
-  }) : super(key: key);
+  });
 
   String _formatDistance(double km) {
     if (km < 1) {

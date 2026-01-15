@@ -10,11 +10,11 @@ class ImagePickerWidget extends StatelessWidget {
   final bool isRequired;
 
   const ImagePickerWidget({
-    Key? key,
+    super.key,
     this.imagePath,
     required this.onImageSelected,
     this.isRequired = true,
-  }) : super(key: key);
+  });
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();

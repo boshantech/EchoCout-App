@@ -26,6 +26,7 @@
 /// 
 /// // ApiClient will handle 401s automatically and retry
 /// ```
+library;
 
 export 'secure_storage_service.dart';
 export 'token_manager.dart';

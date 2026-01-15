@@ -20,7 +20,7 @@ class DriverAuthEntity extends Equatable {
   /// Mask phone number for display (e.g., 8123456790 -> 8123****90)
   static String maskPhoneNumber(String phoneNumber) {
     if (phoneNumber.length != 10) return phoneNumber;
-    return phoneNumber.substring(0, 4) + '****' + phoneNumber.substring(8);
+    return '${phoneNumber.substring(0, 4)}****${phoneNumber.substring(8)}';
   }
 
   @override

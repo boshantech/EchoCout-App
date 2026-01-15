@@ -8,12 +8,12 @@ class SuccessPopup extends StatelessWidget {
   final double totalAmount;
 
   const SuccessPopup({
-    Key? key,
+    super.key,
     required this.onDismiss,
     required this.itemName,
     required this.quantity,
     required this.totalAmount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -20,8 +20,8 @@ class DriverAppShell extends StatefulWidget {
 
   const DriverAppShell({
     required this.driverStateManager,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<DriverAppShell> createState() => _DriverAppShellState();

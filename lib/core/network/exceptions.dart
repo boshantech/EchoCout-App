@@ -15,48 +15,35 @@ class ApiException implements Exception {
 
 class ServerException extends ApiException {
   ServerException({
-    required String message,
-    required int statusCode,
-    dynamic originalError,
-  }) : super(
-    message: message,
-    statusCode: statusCode,
-    originalError: originalError,
-  );
+    required super.message,
+    required int super.statusCode,
+    super.originalError,
+  });
 }
 
 class ClientException extends ApiException {
   ClientException({
-    required String message,
-    dynamic originalError,
-  }) : super(
-    message: message,
-    originalError: originalError,
-  );
+    required super.message,
+    super.originalError,
+  });
 }
 
 class NetworkException extends ApiException {
   NetworkException({
-    required String message,
-    dynamic originalError,
-  }) : super(
-    message: message,
-    originalError: originalError,
-  );
+    required super.message,
+    super.originalError,
+  });
 }
 
 class TimeoutException extends ApiException {
   TimeoutException({
-    required String message,
-  }) : super(message: message);
+    required super.message,
+  });
 }
 
 class UnauthorizedException extends ApiException {
   UnauthorizedException({
-    required String message,
-    dynamic originalError,
-  }) : super(
-    message: message,
-    originalError: originalError,
-  );
+    required super.message,
+    super.originalError,
+  });
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({Key? key}) : super(key: key);
+  const OnboardingPage({super.key});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
@@ -142,11 +142,11 @@ class OnboardingScreen extends StatelessWidget {
   final Widget illustration;
 
   const OnboardingScreen({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     required this.illustration,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +200,10 @@ class PageIndicator extends StatelessWidget {
   final int currentPage;
 
   const PageIndicator({
-    Key? key,
+    super.key,
     required this.pageCount,
     required this.currentPage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +229,7 @@ class PageIndicator extends StatelessWidget {
 
 // Illustration placeholders
 class OnboardingIllustration1 extends StatelessWidget {
-  const OnboardingIllustration1({Key? key}) : super(key: key);
+  const OnboardingIllustration1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +304,7 @@ class OnboardingIllustration1 extends StatelessWidget {
   }
 
   Widget _buildCharacter() {
-    return Container(
+    return SizedBox(
       width: 80,
       height: 120,
       child: Stack(
@@ -379,7 +379,7 @@ class OnboardingIllustration1 extends StatelessWidget {
 }
 
 class OnboardingIllustration2 extends StatelessWidget {
-  const OnboardingIllustration2({Key? key}) : super(key: key);
+  const OnboardingIllustration2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -467,7 +467,7 @@ class OnboardingIllustration2 extends StatelessWidget {
   }
 
   Widget _buildCharacter() {
-    return Container(
+    return SizedBox(
       width: 70,
       height: 110,
       child: Stack(
@@ -518,7 +518,7 @@ class OnboardingIllustration2 extends StatelessWidget {
 }
 
 class OnboardingIllustration3 extends StatelessWidget {
-  const OnboardingIllustration3({Key? key}) : super(key: key);
+  const OnboardingIllustration3({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -601,7 +601,7 @@ class OnboardingIllustration3 extends StatelessWidget {
   }
 
   Widget _buildCharacter() {
-    return Container(
+    return SizedBox(
       width: 70,
       height: 110,
       child: Stack(

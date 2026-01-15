@@ -7,7 +7,7 @@ import '../features/main/presentation/pages/main_page_mock.dart';
 /// DO NOT add driver screens here.
 /// DO NOT share state with driver app.
 class UserAppShell extends StatefulWidget {
-  const UserAppShell({Key? key}) : super(key: key);
+  const UserAppShell({super.key});
 
   @override
   State<UserAppShell> createState() => _UserAppShellState();

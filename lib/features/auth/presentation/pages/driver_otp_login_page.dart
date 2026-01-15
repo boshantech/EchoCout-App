@@ -8,10 +8,10 @@ class DriverOtpVerificationPage extends StatefulWidget {
   final int otpLength;
 
   const DriverOtpVerificationPage({
-    Key? key,
+    super.key,
     required this.phoneNumber,
     this.otpLength = 4,
-  }) : super(key: key);
+  });
 
   @override
   State<DriverOtpVerificationPage> createState() =>
@@ -412,13 +412,12 @@ class _OtpInputField extends StatefulWidget {
   final bool isSmallScreen;
 
   const _OtpInputField({
-    Key? key,
     required this.controller,
     required this.focusNode,
     required this.onChanged,
     required this.onBackspace,
     this.isSmallScreen = false,
-  }) : super(key: key);
+  });
 
   @override
   State<_OtpInputField> createState() => _OtpInputFieldState();

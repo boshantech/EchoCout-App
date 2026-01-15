@@ -7,9 +7,9 @@ class RequestEmptyState extends StatelessWidget {
   final RequestFilter filter;
 
   const RequestEmptyState({
-    Key? key,
+    super.key,
     required this.filter,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

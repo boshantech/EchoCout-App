@@ -5,7 +5,7 @@ import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/eco_components.dart';
 
 class PhoneInputPage extends StatefulWidget {
-  const PhoneInputPage({Key? key}) : super(key: key);
+  const PhoneInputPage({super.key});
 
   @override
   State<PhoneInputPage> createState() => _PhoneInputPageState();
@@ -446,7 +446,7 @@ class _PhoneInputPageState extends State<PhoneInputPage> {
                               onChanged: (value) {
                                 setState(() => _syncContacts = value);
                               },
-                              activeColor: AppColors.forestGreen,
+                              activeThumbColor: AppColors.forestGreen,
                               inactiveThumbColor: AppColors.textTertiary,
                               inactiveTrackColor: AppColors.divider,
                             ),

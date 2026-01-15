@@ -8,9 +8,9 @@ class TransferredRequestCard extends StatelessWidget {
   final PickupRequest request;
 
   const TransferredRequestCard({
-    Key? key,
+    super.key,
     required this.request,
-  }) : super(key: key);
+  });
 
   String _formatDistance(double km) {
     if (km < 1) {

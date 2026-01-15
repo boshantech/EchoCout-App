@@ -1,5 +1,6 @@
 /// 🌍 ECO-FRIENDLY MESSAGING CONSTANTS
 /// Friendly, positive, nature-inspired copy for the app
+library;
 
 abstract class EcoStrings {
   // 🌿 GREETINGS & WELCOME
