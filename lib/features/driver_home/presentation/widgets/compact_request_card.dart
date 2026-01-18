@@ -10,10 +10,10 @@ class CompactRequestCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const CompactRequestCard({
-    Key? key,
+    super.key,
     required this.request,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   String _formatDistance(double km) {
     if (km < 1) {

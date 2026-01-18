@@ -8,12 +8,12 @@ class InvoiceCard extends StatelessWidget {
   final double totalAmount;
 
   const InvoiceCard({
-    Key? key,
+    super.key,
     required this.itemName,
     required this.pricePerKg,
     required this.quantity,
     required this.totalAmount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

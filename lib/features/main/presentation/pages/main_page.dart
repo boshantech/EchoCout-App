@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../config/theme/app_colors.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
 
 // Placeholder screens
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +245,7 @@ class HomePage extends StatelessWidget {
 }
 
 class EchoPage extends StatelessWidget {
-  const EchoPage({Key? key}) : super(key: key);
+  const EchoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +338,7 @@ class EchoPage extends StatelessWidget {
 }
 
 class ScannerPage extends StatelessWidget {
-  const ScannerPage({Key? key}) : super(key: key);
+  const ScannerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -387,7 +387,7 @@ class ScannerPage extends StatelessWidget {
 }
 
 class RankPage extends StatelessWidget {
-  const RankPage({Key? key}) : super(key: key);
+  const RankPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -454,7 +454,7 @@ class RankPage extends StatelessWidget {
 }
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {

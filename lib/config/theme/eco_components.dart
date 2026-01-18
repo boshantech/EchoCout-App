@@ -12,13 +12,13 @@ class EcoCard extends StatelessWidget {
   final BorderRadius? borderRadius;
 
   const EcoCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.onTap,
     this.backgroundColor,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +51,13 @@ class ImpactCard extends StatelessWidget {
   final String? subtitle;
 
   const ImpactCard({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     required this.icon,
     this.accentColor,
     this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -131,13 +131,13 @@ class AchievementBadge extends StatefulWidget {
   final Duration duration;
 
   const AchievementBadge({
-    Key? key,
+    super.key,
     required this.text,
     required this.icon,
     this.backgroundColor,
     this.onDismiss,
     this.duration = const Duration(seconds: 3),
-  }) : super(key: key);
+  });
 
   @override
   State<AchievementBadge> createState() => _AchievementBadgeState();
@@ -237,14 +237,14 @@ class EcoActionButton extends StatefulWidget {
   final bool isSecondary;
 
   const EcoActionButton({
-    Key? key,
+    super.key,
     required this.label,
     this.onPressed,
     this.icon,
     this.isLoading = false,
     this.backgroundColor,
     this.isSecondary = false,
-  }) : super(key: key);
+  });
 
   @override
   State<EcoActionButton> createState() => _EcoActionButtonState();
@@ -377,12 +377,12 @@ class EcoSectionHeader extends StatelessWidget {
   final Color? iconColor;
 
   const EcoSectionHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.icon,
     this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -432,11 +432,11 @@ class SuccessFeedback extends StatefulWidget {
   final VoidCallback? onDismiss;
 
   const SuccessFeedback({
-    Key? key,
+    super.key,
     required this.message,
     this.duration = const Duration(seconds: 2),
     this.onDismiss,
-  }) : super(key: key);
+  });
 
   @override
   State<SuccessFeedback> createState() => _SuccessFeedbackState();
@@ -526,12 +526,12 @@ class StatRow extends StatelessWidget {
   final Color? valueColor;
 
   const StatRow({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     required this.icon,
     this.valueColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

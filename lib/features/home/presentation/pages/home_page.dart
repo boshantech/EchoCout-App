@@ -3,7 +3,7 @@ import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/eco_components.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -355,12 +355,11 @@ class _ProductCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _ProductCard({
-    Key? key,
     required this.title,
     required this.price,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -436,11 +435,10 @@ class _NewsCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _NewsCard({
-    Key? key,
     required this.title,
     required this.subtitle,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -6,9 +6,9 @@ class FilterBottomSheet extends StatefulWidget {
   final DriverStateManager driverStateManager;
 
   const FilterBottomSheet({
-    Key? key,
+    super.key,
     required this.driverStateManager,
-  }) : super(key: key);
+  });
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
@@ -391,7 +391,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               // Value Display
               Text(
-                '${value.toStringAsFixed(0)}',
+                value.toStringAsFixed(0),
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

@@ -10,10 +10,10 @@ class RequestDetailPage extends StatefulWidget {
   final VoidCallback onWasteCollected;
 
   const RequestDetailPage({
-    Key? key,
+    super.key,
     required this.request,
     required this.onWasteCollected,
-  }) : super(key: key);
+  });
 
   @override
   State<RequestDetailPage> createState() => _RequestDetailPageState();
@@ -676,7 +676,7 @@ class _RequestDetailPageState extends State<RequestDetailPage> {
         const SizedBox(height: 24),
         // Waste type dropdown
         DropdownButtonFormField<String>(
-          value: _selectedWasteType,
+          initialValue: _selectedWasteType,
           decoration: InputDecoration(
             labelText: 'Waste Type',
             border: OutlineInputBorder(

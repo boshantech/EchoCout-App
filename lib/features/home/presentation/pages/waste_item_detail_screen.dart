@@ -11,9 +11,9 @@ class WasteItemDetailScreen extends StatefulWidget {
   final Map<String, dynamic> wasteItem;
 
   const WasteItemDetailScreen({
-    Key? key,
+    super.key,
     required this.wasteItem,
-  }) : super(key: key);
+  });
 
   @override
   State<WasteItemDetailScreen> createState() => _WasteItemDetailScreenState();

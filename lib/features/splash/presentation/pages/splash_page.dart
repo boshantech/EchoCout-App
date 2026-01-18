@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 /// Modern 2025 splash screen with continuous zoom-in animation.
 /// Logo smoothly grows and exits screen, then transitions to next screen.
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();

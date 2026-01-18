@@ -7,7 +7,7 @@ import '../bloc/driver_auth_event.dart';
 import '../bloc/driver_auth_state.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({Key? key}) : super(key: key);
+  const OtpVerificationScreen({super.key});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -451,13 +451,12 @@ class _OtpInputField extends StatefulWidget {
   final bool isSmallScreen;
 
   const _OtpInputField({
-    Key? key,
     required this.controller,
     required this.focusNode,
     required this.onChanged,
     required this.onBackspace,
     this.isSmallScreen = false,
-  }) : super(key: key);
+  });
 
   @override
   State<_OtpInputField> createState() => _OtpInputFieldState();

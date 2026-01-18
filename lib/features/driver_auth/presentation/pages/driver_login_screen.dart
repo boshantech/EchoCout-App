@@ -6,9 +6,9 @@ class DriverLoginScreen extends StatefulWidget {
   final DriverStateManager driverStateManager;
 
   const DriverLoginScreen({
-    Key? key,
+    super.key,
     required this.driverStateManager,
-  }) : super(key: key);
+  });
 
   @override
   State<DriverLoginScreen> createState() => _DriverLoginScreenState();

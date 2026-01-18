@@ -16,10 +16,10 @@ class RequestCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const RequestCard({
-    Key? key,
+    super.key,
     required this.request,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   /// Format distance nicely
   String _formatDistance(double km) {

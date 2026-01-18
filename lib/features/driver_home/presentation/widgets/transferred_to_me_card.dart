@@ -10,12 +10,12 @@ class TransferredToMeCard extends StatelessWidget {
   final VoidCallback onReject;
 
   const TransferredToMeCard({
-    Key? key,
+    super.key,
     required this.request,
     required this.transferredByDriverName,
     required this.onAccept,
     required this.onReject,
-  }) : super(key: key);
+  });
 
   String _formatDistance(double km) {
     if (km < 1) {

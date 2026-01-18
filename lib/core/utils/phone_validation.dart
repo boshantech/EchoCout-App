@@ -1,6 +1,7 @@
 /// Phone validation rules and utilities for different countries
 /// 
 /// Currently supports: India 🇮🇳
+library;
 
 /// Phone number validation result
 class PhoneValidationResult {

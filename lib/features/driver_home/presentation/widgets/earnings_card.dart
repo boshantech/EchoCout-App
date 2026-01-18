@@ -6,9 +6,8 @@ class _EarningsCard extends StatefulWidget {
   final DriverProfile? driver;
 
   const _EarningsCard({
-    Key? key,
     required this.driver,
-  }) : super(key: key);
+  });
 
   @override
   State<_EarningsCard> createState() => __EarningsCardState();
@@ -177,7 +176,7 @@ class __EarningsCardState extends State<_EarningsCard>
                         child: _buildStatItem(
                           icon: Icons.star_rounded,
                           label: 'Points',
-                          value: '${driver?.pointsEarned.toStringAsFixed(0) ?? '0'}',
+                          value: driver?.pointsEarned.toStringAsFixed(0) ?? '0',
                           color: AppColors.forestGreen,
                         ),
                       ),

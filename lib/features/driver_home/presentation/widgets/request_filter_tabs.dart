@@ -12,14 +12,14 @@ class RequestFilterTabs extends StatelessWidget {
   final ValueChanged<RequestFilter> onFilterChanged;
 
   const RequestFilterTabs({
-    Key? key,
+    super.key,
     required this.currentFilter,
     required this.activeCount,
     required this.hiddenCount,
     required this.transferredCount,
     required this.transferredToMeCount,
     required this.onFilterChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +73,11 @@ class _FilterChip extends StatelessWidget {
   final VoidCallback onTap;
 
   const _FilterChip({
-    Key? key,
     required this.label,
     required this.count,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

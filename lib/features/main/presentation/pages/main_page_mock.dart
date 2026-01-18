@@ -11,7 +11,7 @@ import '../../../../core/models/pickup_model.dart';
 import '../../../../core/utils/otp_generator.dart';
 
 class MainPageMock extends StatefulWidget {
-  const MainPageMock({Key? key}) : super(key: key);
+  const MainPageMock({super.key});
 
   @override
   State<MainPageMock> createState() => _MainPageMockState();
@@ -115,10 +115,10 @@ class HomeScreenMock extends StatefulWidget {
   final Function(String) onCategoryChange;
 
   const HomeScreenMock({
-    Key? key,
+    super.key,
     required this.selectedCategory,
     required this.onCategoryChange,
-  }) : super(key: key);
+  });
 
   @override
   State<HomeScreenMock> createState() => _HomeScreenMockState();
@@ -443,9 +443,9 @@ class EchoScreenMock extends StatefulWidget {
   final PickupsManager? pickupsManager;
 
   const EchoScreenMock({
-    Key? key,
+    super.key,
     this.pickupsManager,
-  }) : super(key: key);
+  });
 
   @override
   State<EchoScreenMock> createState() => _EchoScreenMockState();
@@ -1008,9 +1008,9 @@ class ScannerScreenMock extends StatefulWidget {
   final ImagePicker imagePicker;
 
   const ScannerScreenMock({
-    Key? key,
+    super.key,
     required this.imagePicker,
-  }) : super(key: key);
+  });
 
   @override
   State<ScannerScreenMock> createState() => _ScannerScreenMockState();
@@ -1181,9 +1181,9 @@ class WasteCategorySelectionScreen extends StatefulWidget {
   final String imagePath;
 
   const WasteCategorySelectionScreen({
-    Key? key,
+    super.key,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   State<WasteCategorySelectionScreen> createState() => _WasteCategorySelectionScreenState();
@@ -1320,10 +1320,10 @@ class WasteTypeSelectionScreen extends StatefulWidget {
   final String imagePath;
 
   const WasteTypeSelectionScreen({
-    Key? key,
+    super.key,
     required this.category,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   State<WasteTypeSelectionScreen> createState() => _WasteTypeSelectionScreenState();
@@ -1484,12 +1484,12 @@ class WasteReviewScreen extends StatefulWidget {
   final String imagePath;
 
   const WasteReviewScreen({
-    Key? key,
+    super.key,
     required this.category,
     required this.type,
     required this.pricePerKg,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   State<WasteReviewScreen> createState() => _WasteReviewScreenState();
@@ -1852,13 +1852,13 @@ class WasteSubmissionSuccessDialog extends StatefulWidget {
   final VoidCallback onDismiss;
 
   const WasteSubmissionSuccessDialog({
-    Key? key,
+    super.key,
     required this.totalPrice,
     required this.category,
     required this.type,
     required this.kg,
     required this.onDismiss,
-  }) : super(key: key);
+  });
 
   @override
   State<WasteSubmissionSuccessDialog> createState() => _WasteSubmissionSuccessDialogState();
@@ -2047,7 +2047,7 @@ class _WasteSubmissionSuccessDialogState extends State<WasteSubmissionSuccessDia
 
 // RANK SCREEN - Complete Leaderboard with Auto-Scrolling Top 10
 class RankScreenMock extends StatefulWidget {
-  const RankScreenMock({Key? key}) : super(key: key);
+  const RankScreenMock({super.key});
 
   @override
   State<RankScreenMock> createState() => _RankScreenMockState();
@@ -2587,12 +2587,12 @@ class MyRankDetailsScreen extends StatelessWidget {
   final String userName;
 
   const MyRankDetailsScreen({
-    Key? key,
+    super.key,
     required this.rank,
     required this.points,
     required this.wasteSold,
     required this.userName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2750,7 +2750,7 @@ class MyRankDetailsScreen extends StatelessWidget {
 class WinnerDetailScreen extends StatelessWidget {
   final Map<String, dynamic> winner;
 
-  const WinnerDetailScreen({Key? key, required this.winner}) : super(key: key);
+  const WinnerDetailScreen({super.key, required this.winner});
 
   @override
   Widget build(BuildContext context) {
@@ -2927,7 +2927,7 @@ class WinnerDetailScreen extends StatelessWidget {
 class ProfileScreenMock extends StatelessWidget {
   final VoidCallback onLogout;
 
-  const ProfileScreenMock({Key? key, required this.onLogout}) : super(key: key);
+  const ProfileScreenMock({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -3041,9 +3041,9 @@ class PendingPickupsPage extends StatelessWidget {
   final PickupsManager? pickupsManager;
 
   const PendingPickupsPage({
-    Key? key,
+    super.key,
     this.pickupsManager,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

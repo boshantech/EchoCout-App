@@ -7,11 +7,11 @@ class QuantitySelector extends StatelessWidget {
   final ValueChanged<double> onQuantityChanged;
 
   const QuantitySelector({
-    Key? key,
+    super.key,
     required this.quantity,
     this.minQuantity = 3.0,
     required this.onQuantityChanged,
-  }) : super(key: key);
+  });
 
   void _decreaseQuantity() {
     if (quantity > minQuantity) {

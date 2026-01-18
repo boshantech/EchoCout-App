@@ -4,7 +4,7 @@ class DriverAuthLocalDataSource {
   // Static authorized driver
   static const String allowedDriverPhone = '8123456790';
   static const String staticOtp = '1234';
-  static const String mockAuthToken = 'mock_token_' + allowedDriverPhone;
+  static const String mockAuthToken = 'mock_token_$allowedDriverPhone';
 
   /// Validate if phone number is authorized
   Future<bool> validatePhoneNumber(String phoneNumber) async {
