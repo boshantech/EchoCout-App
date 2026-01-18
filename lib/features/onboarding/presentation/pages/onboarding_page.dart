@@ -230,289 +230,32 @@ class PageIndicator extends StatelessWidget {
 
 // Illustration placeholders
 class OnboardingIllustration1 extends StatelessWidget {
-  const OnboardingIllustration1({super.key});
+  const OnboardingIllustration1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Character silhouette
-          Positioned(
-            left: 20,
-            bottom: 40,
-            child: _buildCharacter(),
-          ),
-          // Large coin
-          Positioned(
-            top: 30,
-            right: 60,
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.amber[400],
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.amber[400]!.withOpacity(0.4),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Text(
-                  '€',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // Floating coins
-          Positioned(
-            top: 120,
-            right: 30,
-            child: _buildFloatingCoin(size: 30),
-          ),
-          Positioned(
-            bottom: 100,
-            right: 40,
-            child: _buildFloatingCoin(size: 25),
-          ),
-          Positioned(
-            bottom: 80,
-            left: 60,
-            child: _buildFloatingCoin(size: 20),
-          ),
-          // Party popper
-          Positioned(
-            top: 50,
-            right: 20,
-            child: Transform.rotate(
-              angle: 0.5,
-              child: const Icon(Icons.celebration, color: Colors.amber, size: 40),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCharacter() {
-    return Container(
-      width: 80,
-      height: 120,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Head
-          Container(
-            width: 30,
-            height: 35,
-            decoration: BoxDecoration(
-              color: Colors.orange[200],
-              shape: BoxShape.circle,
-            ),
-          ),
-          // Body with arm raised
-          Positioned(
-            top: 40,
-            child: Container(
-              width: 40,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.teal[600],
-              ),
-            ),
-          ),
-          // Arm (raised)
-          Positioned(
-            top: 35,
-            right: -10,
-            child: Container(
-              width: 20,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.orange[200],
-              ),
-            ),
-          ),
-          // Legs
-          Positioned(
-            bottom: -10,
-            child: Container(
-              width: 35,
-              height: 40,
-              color: Colors.black87,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFloatingCoin({required double size}) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.amber[400],
-      ),
-      child: Center(
-        child: Text(
-          '€',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: size * 0.6,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      child: SvgPicture.asset(
+        'assets/images/slider_1.svg',
+        width: 300,
+        height: 300,
+        fit: BoxFit.contain,
       ),
     );
   }
 }
 
 class OnboardingIllustration2 extends StatelessWidget {
-  const OnboardingIllustration2({super.key});
+  const OnboardingIllustration2({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Character
-          Positioned(
-            left: 10,
-            bottom: 30,
-            child: _buildCharacter(),
-          ),
-          // Phone with waste detection
-          Positioned(
-            right: 20,
-            top: 40,
-            child: Container(
-              width: 100,
-              height: 160,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[400]!, width: 3),
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey[200],
-                    ),
-                    child: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.grey,
-                      size: 30,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    width: 60,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // AI detection indicator
-          Positioned(
-            left: 50,
-            top: 80,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF7FD8E8),
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 24,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCharacter() {
-    return Container(
-      width: 70,
-      height: 110,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Head
-          Container(
-            width: 28,
-            height: 32,
-            decoration: BoxDecoration(
-              color: Colors.orange[200],
-              shape: BoxShape.circle,
-            ),
-          ),
-          // Body
-          Positioned(
-            top: 38,
-            child: Container(
-              width: 38,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.teal[600],
-              ),
-            ),
-          ),
-          // Yellow/Orange shirt part
-          Positioned(
-            top: 42,
-            child: Container(
-              width: 18,
-              height: 40,
-              color: Colors.orange[500],
-            ),
-          ),
-          // Legs
-          Positioned(
-            bottom: -8,
-            child: Container(
-              width: 32,
-              height: 38,
-              color: Colors.black87,
-            ),
-          ),
-        ],
+      child: SvgPicture.asset(
+        'assets/images/slider_2.svg',
+        width: 300,
+        height: 300,
+        fit: BoxFit.contain,
       ),
     );
   }
